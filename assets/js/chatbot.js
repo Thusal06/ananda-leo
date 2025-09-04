@@ -51,7 +51,7 @@
 
   // Build UI
   const trigger = el('button', { class: 'chatbot-trigger', 'aria-label': 'Open Leo Chat' }, [
-    el('span', { html: '💬' })
+    el('img', { src: 'assets/images/chat-icon.svg', alt: '', class: 'chat-icon' })
   ]);
   const panel = el('div', { class: 'chatbot-panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Leo Chat' });
   const header = el('div', { class: 'chatbot-header' });
