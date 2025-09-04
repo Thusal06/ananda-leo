@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile App — Leo Club of Ananda College</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="./">
+        <div class="brand-badge" aria-hidden="true"></div>
+        <div>Leo Club of Ananda College</div>
+      </a>
+      <nav>
+        <a href="./">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="board.html">Board</a>
+        <a href="newsletter.html">Newsletter</a>
+        <a href="app.html">Mobile App</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section tint-gold">
+      <div class="container">
+        <div class="eyebrow">Mobile App</div>
+        <h1 class="h2">Coming soon</h1>
+        <p class="lead">Our mobile app will be announced soon. Stay tuned for updates and a sneak peek.</p>
+        <div class="grid cols-2" style="margin-top: 22px; align-items: center;">
+          <div>
+            <div class="card" style="padding: 24px;">
+              <h3>Features planned</h3>
+              <ul>
+                <li>Event calendar and reminders</li>
+                <li>Project sign-ups</li>
+                <li>Member updates</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="card-media" style="border-radius: 12px; background: linear-gradient(145deg, rgba(123,30,30,0.06), rgba(212,175,55,0.06));"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <small>© <span id="year"></span> Leo Club of Ananda College</small>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "issues": [
+    {
+      "title": "August 2025 Newsletter",
+      "month": "August 2025",
+      "date": "2025-08-31",
+      "embedUrl": "https://heyzine.com/flip-book/placeholder-aug-2025",
+      "thumbnail": "assets/images/news-aug-2025.jpg"
+    },
+    {
+      "title": "July 2025 Newsletter",
+      "month": "July 2025",
+      "date": "2025-07-31",
+      "embedUrl": "https://heyzine.com/flip-book/placeholder-jul-2025",
+      "thumbnail": "assets/images/news-jul-2025.jpg"
+    },
+    {
+      "title": "June 2025 Newsletter",
+      "month": "June 2025",
+      "date": "2025-06-30",
+      "embedUrl": "https://heyzine.com/flip-book/placeholder-jun-2025",
+      "thumbnail": "assets/images/news-jun-2025.jpg"
+    }
+  ]
+}

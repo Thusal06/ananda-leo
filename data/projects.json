@@ -1,0 +1,16 @@
+{
+  "projects": [
+    {
+      "title": "Community Health Camp",
+      "summary": "Free health check-ups and awareness sessions for the local community.",
+      "image": "assets/images/sample-project-1.jpg",
+      "tags": ["Service", "Health", "Community"]
+    },
+    {
+      "title": "Scholarship Program",
+      "summary": "Supporting education for underprivileged students.",
+      "image": "assets/images/sample-project-2.jpg",
+      "tags": ["Education", "Fundraising"]
+    }
+  ]
+}

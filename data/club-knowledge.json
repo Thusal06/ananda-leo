@@ -1,0 +1,42 @@
+{
+  "club": {
+    "name": "Leo Club of Ananda College",
+    "motto": "Born to Serve",
+    "about": "A student-led club committed to service, leadership development, and community impact at Ananda College.",
+    "join": {
+      "how": "Complete the application form and attend an orientation. Selection may include a brief interview.",
+      "formUrl": "https://forms.gle/" 
+    },
+    "contact": {
+      "email": "info@example.com",
+      "social": {
+        "facebook": "https://facebook.com",
+        "instagram": "https://instagram.com",
+        "linkedin": "https://linkedin.com",
+        "youtube": "https://youtube.com"
+      }
+    },
+    "board": {
+      "year": "2025/26",
+      "note": "Board to be announced; will appear on the Board page once finalized."
+    },
+    "projects": [
+      {
+        "title": "Community Clean-Up",
+        "description": "Quarterly neighborhood clean-up with student volunteers and local partners.",
+        "tags": ["environment", "community"]
+      },
+      {
+        "title": "Book Donation Drive",
+        "description": "Collecting educational materials for under-resourced schools.",
+        "tags": ["education"]
+      }
+    ]
+  },
+  "leo_general": {
+    "what_is_leo": "LEO stands for Leadership, Experience, Opportunity. Leo Clubs are youth organizations of Lions Clubs International focused on developing leadership through service.",
+    "age_range": "Typically ages 12–30 depending on local regulations and club structures.",
+    "activities": "Community service projects, leadership training, fundraising, and collaborations with Lions Clubs.",
+    "benefits": "Leadership development, teamwork, networking, and making tangible community impact."
+  }
+}
