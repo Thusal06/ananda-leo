@@ -14,12 +14,13 @@ async function getJSON(url) {
 }
 
 function mapPostToProject(p) {
-  // pick best image
-  let image = p.media_url;
-  if (!image && p.children && p.children.data && p.children.data.length) {
-    const imgChild = p.children.data.find(c => c.media_type === 'IMAGE' || c.media_type === 'CAROUSEL_ALBUM' || c.media_type === 'VIDEO');
-    if (imgChild && imgChild.media_url) image = imgChild.media_url;
+  // collect images for slider
+  const images = [];
+  if (p.media_url) images.push(p.media_url);
+  if (p.children && Array.isArray(p.children.data)) {
+    p.children.data.forEach(c => { if (c.media_url) images.push(c.media_url); });
   }
+  const image = images[0];
   const caption = (p.caption || '').trim();
   const title = caption.split('\n')[0].slice(0, 120) || 'Instagram Post';
   const summary = caption.length > 0 ? caption.slice(0, 300) : '';
@@ -27,6 +28,7 @@ function mapPostToProject(p) {
     title,
     summary,
     image,
+    images,
     permalink: p.permalink,
     timestamp: p.timestamp,
     tags: ['Instagram', '#LCACProjects'],

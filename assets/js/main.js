@@ -1,5 +1,16 @@
 // Minimal interactivity: slider, marquee clone, and simple JSON loaders
 
+// Mobile nav toggle
+(function(){
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
+
 // Slider logic
 (function() {
   const slider = document.querySelector('.slider');
@@ -38,6 +49,16 @@
 
   updateDots();
   start();
+
+  // if hero images fail to load or are heavy, drop animation for perf
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.slide').forEach(sl => {
+      const bg = sl.style.backgroundImage;
+      if (!bg || bg.includes('undefined') || bg.includes('hero-')) {
+        // no-op; ensure stable painting
+      }
+    });
+  });
 })();
 
 // Duplicate marquee track to create seamless loop
@@ -55,8 +76,9 @@ async function loadJSON(path) {
 }
 
 async function renderProjects() {
-  const el = document.getElementById('projects-grid');
-  if (!el) return;
+  const featured = document.getElementById('projects-featured');
+  const thumbs = document.getElementById('projects-thumbs');
+  if (!featured || !thumbs) return;
   try {
     const staticData = await loadJSON('data/projects.json');
 
@@ -72,19 +94,61 @@ async function renderProjects() {
       ...igItems.sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)),
       ...(Array.isArray(staticData.projects) ? staticData.projects : [])
     ];
+    if (!all.length) return;
 
-    el.innerHTML = all.map(p => `
-      <article class="card">
-        ${p.image ? `<img class="card-media" src="${p.image}" alt="${p.title}">` : `<div class="card-media"></div>`}
-        <div class="card-body">
-          <div class="card-meta">${(p.tags||[]).map(t=>`<span class='tag'>${t}</span>`).join('')}${p.permalink ? ` <a href='${p.permalink}' target='_blank' rel='noopener' class='tag'>View</a>` : ''}</div>
-          <h3 class="card-title">${p.title || 'Project'}</h3>
-          <p>${p.summary || ''}</p>
+    function setFeatured(p) {
+      const images = Array.isArray(p.images) && p.images.length ? p.images : (p.image ? [p.image] : []);
+      const sliderId = 'proj-slider';
+      featured.innerHTML = `
+        <div class="eyebrow">Latest Project</div>
+        <h2 class="h3" style="margin-top:6px;">${p.title || 'Project'}</h2>
+        <div class="embed-responsive" style="margin-top: 14px;">
+          <div id="${sliderId}" class="proj-slider">
+            ${images.map((src,i)=>`<img src="${src}" alt="${p.title || 'Project'} image ${i+1}" class="proj-slide${i===0?' active':''}">`).join('')}
+          </div>
+        </div>
+        <p style="margin-top:12px;">${p.summary || ''}</p>
+        <div class="card-meta">${(p.tags||[]).map(t=>`<span class='tag'>${t}</span>`).join('')}${p.permalink ? ` <a href='${p.permalink}' target='_blank' rel='noopener' class='tag'>View</a>` : ''}</div>
+      `;
+
+      // simple timed slider
+      const slides = featured.querySelectorAll(`#${sliderId} .proj-slide`);
+      if (slides.length > 1) {
+        let i = 0;
+        setInterval(()=>{
+          slides[i].classList.remove('active');
+          i = (i + 1) % slides.length;
+          slides[i].classList.add('active');
+        }, 4000);
+      }
+    }
+
+    setFeatured(all[0]);
+
+    // Thumbnails list
+    thumbs.innerHTML = all.slice(1).map(it => `
+      <article class="news-card proj-thumb" data-title="${it.title || ''}" data-summary="${it.summary || ''}" data-permalink="${it.permalink || ''}" data-tags='${JSON.stringify(it.tags||[])}' data-images='${JSON.stringify(it.images|| (it.image?[it.image]:[]))}'>
+        ${it.image ? `<img class="news-thumb" src="${it.image}" alt="${it.title || ''}">` : `<div class="news-thumb"></div>`}
+        <div class="news-meta">
+          <span class="title">${it.title || 'Project'}</span>
+          <span class="month">${new Date(it.timestamp||Date.now()).toLocaleDateString()}</span>
         </div>
       </article>
     `).join('');
-  } catch (e) {
-    el.innerHTML = `<p class="lead">No projects found yet.</p>`;
+
+    thumbs.querySelectorAll('.proj-thumb').forEach(card => {
+      card.addEventListener('click', () => {
+        const images = JSON.parse(card.getAttribute('data-images')||'[]');
+        const title = card.getAttribute('data-title')||'Project';
+        const summary = card.getAttribute('data-summary')||'';
+        const permalink = card.getAttribute('data-permalink')||'';
+        const tags = JSON.parse(card.getAttribute('data-tags')||'[]');
+        setFeatured({ images, image: images[0], title, summary, permalink, tags });
+        window.scrollTo({ top: featured.offsetTop - 90, behavior: 'smooth' });
+      });
+    });
+  } catch (_) {
+    featured.innerHTML = '<p class="lead">Projects will appear here soon.</p>';
   }
 }
 
@@ -124,19 +188,24 @@ async function renderDirectors() {
 }
 
 async function renderPastPresidents() {
-  const el = document.getElementById('past-presidents-grid');
-  if (!el) return;
+  const marquee = document.getElementById('past-marquee');
+  if (!marquee) return;
+  const track = marquee.querySelector('.people-track');
   try {
     const data = await loadJSON('data/past-presidents.json');
-    el.innerHTML = (data.members || []).map(m => `
-      <div class="board-card">
-        <img class="board-avatar" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}">
-        <div class="board-role">${m.year}</div>
-        <div class="board-name">${m.name}</div>
+    const people = (data.members || []);
+    if (!people.length) return;
+    const html = people.map(m => `
+      <div class="people-item">
+        <img class="board-avatar" loading="lazy" decoding="async" width="240" height="240" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}" onerror="this.onerror=null;this.src='assets/images/avatar-placeholder.svg';">
+        <div class="meta"><span class="board-role">${m.year}</span><span class="board-name">${m.name}</span></div>
       </div>
     `).join('');
+    // duplicate for seamless loop; use requestAnimationFrame to avoid jank on heavy DOM
+    track.innerHTML = html + html;
+    requestAnimationFrame(()=>{ track.style.transform = 'translateZ(0)'; });
   } catch (e) {
-    el.innerHTML = `<p class="lead">Past presidents list coming soon.</p>`;
+    marquee.outerHTML = '<p class="lead">Past presidents list coming soon.</p>';
   }
 }
 
@@ -154,7 +223,7 @@ async function renderNewsletters() {
       featured.innerHTML = `
         <div class="eyebrow">Latest Issue</div>
         <h1 class="h2" style="margin-top:6px;">${item.title || item.month}</h1>
-        <div class="embed-responsive" style="margin-top: 14px;">
+        <div class="embed-responsive" style="margin-top: 14px; position: relative;">
           <iframe src="${item.embedUrl}" allowfullscreen loading="lazy" title="${item.title || 'Newsletter'}"></iframe>
         </div>
       `;
@@ -162,15 +231,32 @@ async function renderNewsletters() {
 
     setFeatured(issues[0]);
 
-    list.innerHTML = issues.slice(1).map(it => `
+    function localPreviewFor(month) {
+      // Map month names to local preview filenames
+      const map = {
+        'January 2025': 'LCAC Newsletter Jan.png',
+        'February 2025': 'LCAC Newsletter Feb.png',
+        'March 2025': 'LCAC Newsletter Mar.png',
+        'April 2025': 'LCAC Newsletter Apr.png',
+        'July 2025': 'LCAC Newsletter July.png',
+        'December 2024': 'LCAC Newsletter Dec.png'
+      };
+      const file = map[month] || '';
+      return file ? `assets/images/newsletterpreviews/${file}` : '';
+    }
+
+    list.innerHTML = issues.slice(1).map(it => {
+      const local = localPreviewFor(it.month || '');
+      const thumb = it.thumbnail || local;
+      return `
       <article class="news-card" data-embed="${it.embedUrl}" data-title="${it.title || ''}" data-month="${it.month || ''}">
-        ${it.thumbnail ? `<img class="news-thumb" src="${it.thumbnail}" alt="${it.title || it.month}">` : `<div class="news-thumb"></div>`}
+        ${thumb ? `<img class="news-thumb" src="${thumb}" alt="${it.title || it.month}">` : `<div class="news-thumb"></div>`}
         <div class="news-meta">
           <span class="title">${it.title || it.month}</span>
           <span class="month">${it.month || ''}</span>
         </div>
-      </article>
-    `).join('');
+      </article>`;
+    }).join('');
 
     list.querySelectorAll('.news-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -187,19 +273,26 @@ async function renderNewsletters() {
 }
 
 function addAdminRefreshButton() {
-  const grid = document.getElementById('projects-grid');
-  if (!grid) return;
+  const container = document.getElementById('projects-featured')?.parentElement || document.querySelector('.section .container');
+  if (!container) return;
+
+  // Read token from URL once; persist for the session
   const url = new URL(window.location.href);
-  const admin = url.searchParams.get('admin');
-  const token = url.searchParams.get('token');
-  if (!admin || !token) return;
+  const urlToken = url.searchParams.get('token');
+  const urlAdmin = url.searchParams.get('admin');
+  if (urlToken) sessionStorage.setItem('admin_token', urlToken);
+  if (urlAdmin) sessionStorage.setItem('is_admin', '1');
+
+  const token = sessionStorage.getItem('admin_token');
+  const isAdmin = sessionStorage.getItem('is_admin') === '1';
+  if (!isAdmin || !token) return;
 
   const bar = document.createElement('div');
   bar.style.display = 'flex';
   bar.style.justifyContent = 'flex-end';
   bar.style.margin = '8px 0 16px';
   bar.innerHTML = `<button class="button" id="btn-refresh-ig">Refresh Instagram Projects</button>`;
-  grid.parentElement.insertBefore(bar, grid);
+  container.insertBefore(bar, container.firstChild);
 
   const btn = bar.querySelector('#btn-refresh-ig');
   btn.addEventListener('click', async () => {

@@ -1,7 +1,10 @@
 {
   "members": [
-    { "name": "To Be Announced", "year": "2024/25", "avatar": "assets/images/pastpres2425.jpg" },
-    { "name": "To Be Announced", "year": "2023/24", "avatar": "" },
-    { "name": "To Be Announced", "year": "2022/23", "avatar": "" }
+    { "name": "Leo Lion Muthula Liyanage", "year": "2024/25", "avatar": "assets/images/pastpresidents/2425.jpg" },
+    { "name": "Leo Tharusha Randitha", "year": "2023/24", "avatar": "assets/images/pastpresidents/2324.webp" },
+    { "name": "Leo Suran Senanayake", "year": "2022/23", "avatar": "assets/images/pastpresidents/2223.jpg" },
+    { "name": "Leo Thevin Thenura", "year": "2021/22", "avatar": "assets/images/pastpresidents/2122.jpg" },
+    { "name": "Leo Sunera Lanerolle", "year": "2020/21", "avatar": "assets/images/pastpresidents/2021.jpg" },
+    { "name": "Leo Lion Sunera Lokupitiya", "year": "2018/19", "avatar": "assets/images/pastpresidents/1819.jpg" }
   ]
 }
