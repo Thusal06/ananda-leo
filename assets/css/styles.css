@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;600;700&display=swap');
+
 /*
   Leo Club of Ananda College — Minimal, fluid design inspired by Apple
   Color palette is subtly aligned with club colors: maroon, yellow-gold, white
@@ -96,7 +98,7 @@ main { flex: 1; display: block; }
 .slide-caption p { margin: 0; color: #fff; opacity: 0.98; display: inline-block; text-shadow: 0 1px 2px rgba(0,0,0,0.35); }
 /* hide old title; glassy motto bottom-left */
 .slide-title-top { display: none; }
-.slide-motto-bottom { position: absolute; left: 6%; bottom: 8%; transform: none; color: #fff; text-align: left; font-size: clamp(14px, 2.2vw, 20px); letter-spacing: 0.16em; text-transform: uppercase; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 8px 12px; border-radius: 12px; }
+.slide-motto-bottom { position: absolute; left: 6%; bottom: 8%; transform: none; color: #fff; text-align: left; font-size: clamp(14px, 2.2vw, 20px); letter-spacing: 0.16em; text-transform: uppercase; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); padding: 8px 12px; border-radius: 12px; font-family: 'Kode Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
 
 @media (max-width: 700px) {
   .slide-caption { left: 5%; max-width: 90%; }
@@ -144,7 +146,12 @@ main { flex: 1; display: block; }
 
 /* Sections */
 .section.alt { background: var(--color-surface); }
-.section.tint-gold { background: linear-gradient(180deg, var(--color-gold-soft), rgba(212,175,55,0.04)); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); }
+.section.tint-gold { 
+  /* Softer, lower-contrast gold to reduce the internal notch effect */
+  background: linear-gradient(180deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02)); 
+  border-top: 1px solid rgba(229,231,235,0.6); 
+  border-bottom: 1px solid rgba(229,231,235,0.6); 
+}
 .cta { text-align: center; padding: 64px 20px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.28); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.35); }
 /* Dark glass variant for white text on images */
 .glass-dark { background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.22); }
@@ -191,35 +198,47 @@ main { flex: 1; display: block; }
 .board-grid { display: grid; gap: 36px 28px; grid-template-columns: repeat(auto-fit, 260px); justify-content: center; }
 @media (max-width: 1200px) { .board-grid { grid-template-columns: repeat(auto-fit, 220px); } }
 @media (max-width: 900px) { .board-grid { grid-template-columns: repeat(auto-fit, 200px); } }
-.board-card { text-align: center; padding: 10px; border-radius: var(--radius-md); border: none; background: transparent; box-shadow: none; }
+.board-card { text-align: center; padding: 10px; border-radius: var(--radius-md); border: none; background: transparent; box-shadow: none; display: flex; flex-direction: column; align-items: center; }
 .board-avatar { width: 260px; height: 260px; border-radius: 18px; object-fit: cover; display: block; margin: 0 auto 16px; background: #eee; transition: transform .2s ease, box-shadow .25s ease; }
 .board-card:hover .board-avatar { transform: translateY(-4px) scale(1.02); box-shadow: 0 16px 36px rgba(0,0,0,0.12); }
 @media (max-width: 1200px) { .board-avatar { width: 220px; height: 220px; } }
 @media (max-width: 900px) { .board-avatar { width: 200px; height: 200px; } }
+.board-meta { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 64px; }
 .board-role { font-weight: 800; margin: 8px 0 2px; font-size: 16px; }
 .board-name { color: #111827; margin: 0 0 8px; font-size: 15px; }
 
 /* People marquee */
 .people-marquee { 
   overflow: hidden; 
-  border-top: 1px solid var(--color-border); 
-  border-bottom: 1px solid var(--color-border); 
-  background:
-    radial-gradient(900px 180px at 70% 50%, rgba(212,175,55,0.10), transparent),
-    radial-gradient(700px 160px at 30% 50%, rgba(212,175,55,0.08), transparent),
-    var(--color-surface);
-  border-radius: 14px; 
+  /* Remove own borders/background to avoid visible banding; let parent section paint */
+  background: transparent;
+  border: 0; 
+  border-radius: 18px; 
+  /* Soft edge fade so items don't look hard-clipped at container edges */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
-.people-track { display: flex; align-items: center; gap: 48px; padding: 24px 0; animation: scrollPeople 38s linear infinite; will-change: transform; }
+.people-track { display: flex; align-items: center; gap: 48px; padding: 24px 0; animation: scrollPeople 28s linear infinite; will-change: transform; }
 .people-item { 
   position: relative; display: flex; align-items: center; gap: 18px; 
-  padding: 16px 18px; border-radius: 20px; 
-  background: rgba(255,255,255,0.28); 
-  border: 1px solid rgba(255,255,255,0.35); 
-  backdrop-filter: blur(12px); 
-  box-shadow: 0 18px 42px rgba(0,0,0,0.12);
+  padding: 16px 18px; border-radius: 26px; 
+  background: rgba(255,255,255,0.24); 
+  border: 1px solid rgba(255,255,255,0.30); 
+  backdrop-filter: blur(14px) saturate(110%);
+  box-shadow: 0 24px 48px rgba(0,0,0,0.14);
+  overflow: hidden; /* ensure children respect rounded corners during slide */
 }
-.people-item img, .people-item .board-avatar { width: 240px; height: 240px; border-radius: 22px; object-fit: cover; background: #eee; }
+.people-item::before {
+  /* inner light sheen for liquid/glass feel */
+  content:""; position:absolute; inset:0; pointer-events:none; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.10));
+  mix-blend-mode: soft-light; opacity: .6;
+}
+.people-item img, .people-item .board-avatar { 
+  width: 240px; height: 240px; border-radius: 22px; object-fit: cover; background: #eee; 
+  overflow: clip; /* keep rounded corners intact */
+  overflow-clip-margin: 12px; /* prevent corner artifacts during transforms */
+}
 .people-item .meta { display: flex; flex-direction: column; line-height: 1.25; }
 .people-item .meta .name, .people-item .board-name { font-weight: 800; color: #111827; font-size: 20px; }
 .people-item .meta .year, .people-item .board-role { color: var(--color-maroon-ink); font-size: 16px; font-weight: 800; }

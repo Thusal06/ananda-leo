@@ -75,12 +75,21 @@ async function loadJSON(path) {
   return res.json();
 }
 
+// Try serverless endpoint first; fall back to local JSON in /data for local preview
+async function loadJSONFallback(primary, fallback) {
+  try {
+    return await loadJSON(primary);
+  } catch (_e) {
+    return await loadJSON(fallback);
+  }
+}
+
 async function renderProjects() {
   const featured = document.getElementById('projects-featured');
   const thumbs = document.getElementById('projects-thumbs');
   if (!featured || !thumbs) return;
   try {
-    const staticData = await loadJSON('data/projects.json');
+    const staticData = await loadJSONFallback('/.netlify/functions/data-read?name=projects', 'data/projects.json');
 
     // Try Instagram cache
     let igItems = [];
@@ -156,13 +165,15 @@ async function renderBoard() {
   const el = document.getElementById('board-grid');
   if (!el) return;
   try {
-    const data = await loadJSON('data/board.json');
+    const data = await loadJSONFallback('/.netlify/functions/data-read?name=board', 'data/board.json');
     el.innerHTML = (data.members || []).map(m => `
       <div class="board-card">
         <img class="board-avatar" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}">
-        <div class="board-role">${m.role}</div>
-        <div class="board-name">${m.name}</div>
-        ${m.email ? `<a href="mailto:${m.email}">Contact</a>` : ''}
+        <div class="board-meta">
+          <div class="board-role">${m.role}</div>
+          <div class="board-name">${m.name}</div>
+          ${m.email ? `<a href="mailto:${m.email}">Contact</a>` : ''}
+        </div>
       </div>
     `).join('');
   } catch (e) {
@@ -174,12 +185,14 @@ async function renderDirectors() {
   const el = document.getElementById('directors-grid');
   if (!el) return;
   try {
-    const data = await loadJSON('data/directors.json');
+    const data = await loadJSONFallback('/.netlify/functions/data-read?name=directors', 'data/directors.json');
     el.innerHTML = (data.members || []).map(m => `
       <div class="board-card">
         <img class="board-avatar" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}">
-        <div class="board-role">${m.role}</div>
-        <div class="board-name">${m.name}</div>
+        <div class="board-meta">
+          <div class="board-role">${m.role}</div>
+          <div class="board-name">${m.name}</div>
+        </div>
       </div>
     `).join('');
   } catch (e) {
@@ -192,7 +205,7 @@ async function renderPastPresidents() {
   if (!marquee) return;
   const track = marquee.querySelector('.people-track');
   try {
-    const data = await loadJSON('data/past-presidents.json');
+    const data = await loadJSONFallback('/.netlify/functions/data-read?name=past-presidents', 'data/past-presidents.json');
     const people = (data.members || []);
     if (!people.length) return;
     const html = people.map(m => `
@@ -214,7 +227,7 @@ async function renderNewsletters() {
   const list = document.getElementById('news-thumbs');
   if (!featured || !list) return;
   try {
-    const data = await loadJSON('data/newsletters.json');
+    const data = await loadJSONFallback('/.netlify/functions/data-read?name=newsletters', 'data/newsletters.json');
     // Sort descending by date
     const issues = (data.issues || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
     if (!issues.length) return;

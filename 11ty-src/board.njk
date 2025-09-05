@@ -1,0 +1,72 @@
+---
+layout: layout.njk
+title: Board — Leo Club of Ananda College
+permalink: board-ssg.html
+---
+<section class="section tint-gold">
+  <div class="container">
+    <div class="eyebrow">Board of Officials</div>
+    <h1 class="h2">Leadership for 2025/26</h1>
+    <p class="lead">Pre-rendered by Eleventy (SSG) using data/directors.json & data/board.json</p>
+    <div class="board-grid" style="margin-top:22px;">
+      {% for m in board.members %}
+      <div class="board-card">
+        <img class="board-avatar" src="{{ m.avatar or '/assets/images/avatar-placeholder.svg' }}" alt="{{ m.name }}">
+        <div class="board-meta">
+          <div class="board-role">{{ m.role }}</div>
+          <div class="board-name">{{ m.name }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section tint-gold">
+  <div class="container">
+    <div class="eyebrow">Past Presidents</div>
+    <h2 class="h2">Past Presidents</h2>
+    <p class="lead">Honouring our legacy of leadership.</p>
+    <div id="past-marquee" class="people-marquee" aria-label="Past presidents scrolling list">
+      <div class="people-track">
+        {% if past.members and past.members | length %}
+          {% for m in past.members %}
+          <div class="people-item">
+            <img class="board-avatar" loading="lazy" decoding="async" width="240" height="240" src="{{ m.avatar or '/assets/images/avatar-placeholder.svg' }}" alt="{{ m.name }}">
+            <div class="meta"><span class="board-role">{{ m.year }}</span><span class="board-name">{{ m.name }}</span></div>
+          </div>
+          {% endfor %}
+          {% for m in past.members %}
+          <div class="people-item">
+            <img class="board-avatar" loading="lazy" decoding="async" width="240" height="240" src="{{ m.avatar or '/assets/images/avatar-placeholder.svg' }}" alt="{{ m.name }}">
+            <div class="meta"><span class="board-role">{{ m.year }}</span><span class="board-name">{{ m.name }}</span></div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="lead">Past presidents list coming soon.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt tint-gold" style="background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('/assets/images/directorpanel.jpeg') center/cover no-repeat;">
+  <div class="container">
+    <div class="cta glass-dark on-dark" style="text-align:left;">
+      <div class="eyebrow">Director Panel</div>
+      <h2 class="h2">Director Panel 2025/26</h2>
+      <p class="lead">Pre-rendered by Eleventy from directors.json</p>
+      <div class="board-grid" style="margin-top:22px;">
+        {% for m in directors.members %}
+        <div class="board-card">
+          <img class="board-avatar" src="{{ m.avatar or '/assets/images/avatar-placeholder.svg' }}" alt="{{ m.name }}">
+          <div class="board-meta">
+            <div class="board-role">{{ m.role }}</div>
+            <div class="board-name">{{ m.name }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

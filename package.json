@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "license": "MIT",
   "engines": { "node": ">=18" },
+  "scripts": {
+    "build:ssg": "npx @11ty/eleventy",
+    "serve:ssg": "npx @11ty/eleventy --serve"
+  },
   "dependencies": {
     "@netlify/blobs": "^6.4.0"
   }
