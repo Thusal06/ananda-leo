@@ -1,0 +1,10 @@
+{
+  "name": "lcac-site",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@netlify/blobs": "^6.4.0"
+  }
+}

@@ -58,13 +58,27 @@ async function renderProjects() {
   const el = document.getElementById('projects-grid');
   if (!el) return;
   try {
-    const data = await loadJSON('data/projects.json');
-    el.innerHTML = data.projects.map(p => `
+    const staticData = await loadJSON('data/projects.json');
+
+    // Try Instagram cache
+    let igItems = [];
+    try {
+      const ig = await loadJSON('/.netlify/functions/ig-projects-read');
+      igItems = Array.isArray(ig.items) ? ig.items : [];
+    } catch (_) {}
+
+    // Merge: Instagram first (newest), then static
+    const all = [
+      ...igItems.sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)),
+      ...(Array.isArray(staticData.projects) ? staticData.projects : [])
+    ];
+
+    el.innerHTML = all.map(p => `
       <article class="card">
         ${p.image ? `<img class="card-media" src="${p.image}" alt="${p.title}">` : `<div class="card-media"></div>`}
         <div class="card-body">
-          <div class="card-meta">${p.tags?.map(t=>`<span class='tag'>${t}</span>`).join('') || ''}</div>
-          <h3 class="card-title">${p.title}</h3>
+          <div class="card-meta">${(p.tags||[]).map(t=>`<span class='tag'>${t}</span>`).join('')}${p.permalink ? ` <a href='${p.permalink}' target='_blank' rel='noopener' class='tag'>View</a>` : ''}</div>
+          <h3 class="card-title">${p.title || 'Project'}</h3>
           <p>${p.summary || ''}</p>
         </div>
       </article>
@@ -172,10 +186,42 @@ async function renderNewsletters() {
   }
 }
 
+function addAdminRefreshButton() {
+  const grid = document.getElementById('projects-grid');
+  if (!grid) return;
+  const url = new URL(window.location.href);
+  const admin = url.searchParams.get('admin');
+  const token = url.searchParams.get('token');
+  if (!admin || !token) return;
+
+  const bar = document.createElement('div');
+  bar.style.display = 'flex';
+  bar.style.justifyContent = 'flex-end';
+  bar.style.margin = '8px 0 16px';
+  bar.innerHTML = `<button class="button" id="btn-refresh-ig">Refresh Instagram Projects</button>`;
+  grid.parentElement.insertBefore(bar, grid);
+
+  const btn = bar.querySelector('#btn-refresh-ig');
+  btn.addEventListener('click', async () => {
+    btn.disabled = true; btn.textContent = 'Refreshing...';
+    try {
+      const res = await fetch('/.netlify/functions/ig-projects-refresh', {
+        method: 'POST',
+        headers: { 'X-Admin-Token': token }
+      });
+      const data = await res.json().catch(()=>({}));
+      alert(data.ok ? `Refreshed ${data.count || 0} items` : 'Refresh done (check logs)');
+      await renderProjects();
+    } catch (_) { alert('Refresh failed'); }
+    finally { btn.disabled = false; btn.textContent = 'Refresh Instagram Projects'; }
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   renderProjects();
   renderBoard();
   renderDirectors();
   renderPastPresidents();
   renderNewsletters();
+  addAdminRefreshButton();
 });

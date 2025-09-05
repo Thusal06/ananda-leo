@@ -6,6 +6,10 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Schedule: 1st and 15th at 01:30 UTC (twice a month)
+[functions."ig-projects-fetch"]
+  schedule = "30 1 1,15 * *"
+
 [[headers]]
   for = "/data/*"
   [headers.values]
