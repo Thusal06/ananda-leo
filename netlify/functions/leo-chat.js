@@ -42,12 +42,23 @@ exports.handler = async (event) => {
     // Try local knowledge first for club-specific questions
     const localAnswer = answerFromKnowledge(questionRaw, knowledge);
     
-    // If local knowledge provides a specific answer, use it
-    if (localAnswer && !localAnswer.includes("I don't have that answer yet")) {
+    // Check if local knowledge provides a specific, detailed answer
+    const isSpecificLocalAnswer = localAnswer && 
+      !localAnswer.includes("I don't have that answer yet") &&
+      !localAnswer.includes("Try asking:") &&
+      !localAnswer.includes("check the") &&
+      localAnswer.length > 50; // Ensure it's a substantial answer
+    
+    // For very specific club questions, prefer local knowledge
+    const q = questionRaw.toLowerCase();
+    const isClubSpecific = q.includes('join') || q.includes('board') || q.includes('contact') || 
+                          q.includes('motto') || q.includes('ananda') || q.includes('application');
+    
+    if (isSpecificLocalAnswer && isClubSpecific) {
       return respJSON(200, { answer: localAnswer, source: 'local' });
     }
 
-    // Otherwise, use Gemini API for more comprehensive answers
+    // For general questions or when local knowledge is insufficient, use Gemini AI
     try {
       const geminiAnswer = await getGeminiAnswer(questionRaw, knowledge);
       return respJSON(200, { answer: geminiAnswer, source: 'gemini' });
