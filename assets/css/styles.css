@@ -106,6 +106,28 @@ main { flex: 1; display: block; }
 
 .slider-controls { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; pointer-events: none; }
 .slider-btn { pointer-events: all; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; background: rgba(255,255,255,0.8); backdrop-filter: blur(6px); }
+
+/* Hide slider controls on mobile and enable touch swipe */
+@media (max-width: 768px) {
+  .slider-controls { display: none; }
+  .slider { 
+    touch-action: pan-y pinch-zoom; /* Allow vertical scrolling but enable horizontal swipe detection */
+    user-select: none; /* Prevent text selection during swipe */
+    cursor: grab; /* Visual hint that the area is interactive */
+  }
+  .slider:active {
+    cursor: grabbing; /* Visual feedback during touch */
+  }
+  /* Make dots larger for better touch targets on mobile */
+  .dot { 
+    width: 8px; 
+    height: 8px; 
+    cursor: pointer;
+  }
+  .dot.active { 
+    width: 20px; 
+  }
+}
 .dots { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; gap: 8px; }
 .dot { width: 6px; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.6); }
 .dot.active { width: 18px; background: white; transition: width 250ms ease; }
@@ -213,17 +235,34 @@ main { flex: 1; display: block; }
 .embed-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; }
 .embed-overlay .cta { background: rgba(255,255,255,0.28); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.35); color: #fff; }
 
+/* Mobile responsiveness for newsletter embed */
+@media (max-width: 768px) {
+  .embed-responsive { padding-top: 70%; /* Slightly taller aspect ratio for mobile */ }
+  .embed-overlay { padding: 16px; }
+}
+@media (max-width: 480px) {
+  .embed-responsive { padding-top: 75%; }
+  .embed-overlay { padding: 12px; }
+}
+
 /* Thumbs list for newsletter and projects */
 .news-thumbs { display: grid; gap: 16px; grid-template-columns: repeat(6, minmax(0,1fr)); }
 @media (max-width: 1100px) { .news-thumbs { grid-template-columns: repeat(4, minmax(0,1fr)); } }
-@media (max-width: 700px) { .news-thumbs { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-@media (max-width: 420px) { .news-thumbs { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .news-thumbs { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; } }
+@media (max-width: 600px) { .news-thumbs { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; } }
+@media (max-width: 480px) { .news-thumbs { grid-template-columns: 1fr; gap: 16px; } }
 .news-card { border: 1px solid var(--color-border); border-radius: 12px; overflow: hidden; background: white; cursor: pointer; transition: transform .15s ease, box-shadow .2s ease; box-shadow: var(--shadow-soft); }
 .news-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.08); }
 .news-thumb { display: block; width: 100%; aspect-ratio: 16/10; background: #e5e7eb; object-fit: cover; }
 .news-meta { padding: 10px 12px; font-size: 13px; color: #374151; }
 .news-meta .title { font-weight: 600; color: #111827; display: block; margin-bottom: 4px; }
 .news-meta .month { color: var(--color-muted); }
+
+/* Mobile responsiveness for news cards */
+@media (max-width: 480px) {
+  .news-meta { padding: 8px 10px; font-size: 12px; }
+  .news-meta .title { font-size: 14px; }
+}
 
 /* Project slider */
 .proj-slider { position: relative; width: 100%; padding-top: 56.25%; background: #e5e7eb; border-radius: var(--radius-md); overflow: hidden; }
@@ -255,6 +294,14 @@ main { flex: 1; display: block; }
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
 .people-track { display: flex; align-items: center; gap: 48px; padding: 24px 0; animation: scrollPeople 28s linear infinite; will-change: transform; flex-wrap: nowrap; }
+
+/* Mobile responsiveness for people marquee */
+@media (max-width: 768px) {
+  .people-track { gap: 32px; padding: 20px 0; }
+}
+@media (max-width: 480px) {
+  .people-track { gap: 24px; padding: 16px 0; }
+}
 .people-item { 
   position: relative; display: flex; align-items: center; gap: 18px; 
   padding: 16px 18px; border-radius: 26px; 
@@ -286,9 +333,28 @@ main { flex: 1; display: block; }
 .people-item .meta .name, .people-item .board-name { font-weight: 800; color: #111827; font-size: 20px; }
 .people-item .meta .year, .people-item .board-role { color: var(--color-maroon-ink); font-size: 16px; font-weight: 800; }
 .people-marquee:hover .people-track { animation-play-state: paused; }
-@media (max-width: 1200px) { .people-item img, .people-item .board-avatar { width: 200px !important; height: 200px !important; min-width: 200px; min-height: 200px; max-width: 200px; max-height: 200px; } }
-@media (max-width: 900px) { .people-item img, .people-item .board-avatar { width: 170px !important; height: 170px !important; min-width: 170px; min-height: 170px; max-width: 170px; max-height: 170px; } }
-@media (max-width: 600px) { .people-item img, .people-item .board-avatar { width: 130px !important; height: 130px !important; min-width: 130px; min-height: 130px; max-width: 130px; max-height: 130px; } }
+
+/* Improved mobile responsiveness for people items */
+@media (max-width: 1200px) { 
+  .people-item img, .people-item .board-avatar { width: 200px !important; height: 200px !important; min-width: 200px; min-height: 200px; max-width: 200px; max-height: 200px; } 
+}
+@media (max-width: 900px) { 
+  .people-item img, .people-item .board-avatar { width: 170px !important; height: 170px !important; min-width: 170px; min-height: 170px; max-width: 170px; max-height: 170px; } 
+}
+@media (max-width: 768px) {
+  .people-item { gap: 14px; padding: 12px 14px; }
+  .people-item .meta .name, .people-item .board-name { font-size: 18px; }
+  .people-item .meta .year, .people-item .board-role { font-size: 14px; }
+}
+@media (max-width: 600px) { 
+  .people-item img, .people-item .board-avatar { width: 120px !important; height: 120px !important; min-width: 120px; min-height: 120px; max-width: 120px; max-height: 120px; } 
+}
+@media (max-width: 480px) {
+  .people-item img, .people-item .board-avatar { width: 100px !important; height: 100px !important; min-width: 100px; min-height: 100px; max-width: 100px; max-height: 100px; }
+  .people-item { gap: 12px; padding: 10px 12px; }
+  .people-item .meta .name, .people-item .board-name { font-size: 16px; }
+  .people-item .meta .year, .people-item .board-role { font-size: 13px; }
+}
 @keyframes scrollPeople { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
 
 /* Helpers */

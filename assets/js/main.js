@@ -47,6 +47,57 @@
   slider.querySelector('.btn-next')?.addEventListener('click', () => { stop(); next(); start(); });
   slider.querySelector('.btn-prev')?.addEventListener('click', () => { stop(); prev(); start(); });
 
+  // Touch/swipe functionality for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
+  
+  function handleTouchStart(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+  
+  function handleTouchMove(e) {
+    // Prevent default scrolling if horizontal swipe is detected
+    const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+    
+    if (deltaX > deltaY) {
+      e.preventDefault();
+    }
+  }
+  
+  function handleTouchEnd(e) {
+    touchEndX = e.changedTouches[0].clientX;
+    touchEndY = e.changedTouches[0].clientY;
+    handleSwipe();
+  }
+  
+  function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 50;
+    
+    // Only trigger swipe if horizontal movement is greater than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      stop();
+      if (deltaX > 0) {
+        // Swipe right - go to previous slide
+        prev();
+      } else {
+        // Swipe left - go to next slide
+        next();
+      }
+      start();
+    }
+  }
+  
+  // Add touch event listeners
+  slider.addEventListener('touchstart', handleTouchStart, { passive: false });
+  slider.addEventListener('touchmove', handleTouchMove, { passive: false });
+  slider.addEventListener('touchend', handleTouchEnd, { passive: true });
+
   updateDots();
   start();
 
