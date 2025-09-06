@@ -49,12 +49,29 @@ exports.handler = async (event) => {
       !localAnswer.includes("check the") &&
       localAnswer.length > 50; // Ensure it's a substantial answer
     
-    // For very specific club questions, prefer local knowledge
+    // Improved logic for club-specific questions
     const q = questionRaw.toLowerCase();
-    const isClubSpecific = q.includes('join') || q.includes('board') || q.includes('contact') || 
-                          q.includes('motto') || q.includes('ananda') || q.includes('application');
     
-    if (isSpecificLocalAnswer && isClubSpecific) {
+    // High priority club-specific terms (always prefer local knowledge)
+    const isHighPriorityClubSpecific = q.includes('ananda') || 
+                                      q.includes('leo club of ananda') ||
+                                      q.includes('this club') ||
+                                      q.includes('your club') ||
+                                      q.includes('our club');
+    
+    // Medium priority club-specific terms
+    const isMediumPriorityClubSpecific = q.includes('join') || q.includes('board') || 
+                                        q.includes('contact') || q.includes('motto') || 
+                                        q.includes('application') || q.includes('projects') ||
+                                        q.includes('members') || q.includes('activities');
+    
+    // Generic Leo questions that should NOT prioritize local knowledge
+    const isGenericLeoQuestion = (q.includes('what is leo') && !q.includes('ananda')) ||
+                                (q.includes('leo club') && !q.includes('ananda') && !q.includes('this') && !q.includes('your') && !q.includes('our')) ||
+                                (q.includes('leo') && (q.includes('general') || q.includes('about leo') || q.includes('leo program')));
+    
+    // Prioritize local knowledge for club-specific questions
+    if (isSpecificLocalAnswer && (isHighPriorityClubSpecific || (isMediumPriorityClubSpecific && !isGenericLeoQuestion))) {
       return respJSON(200, { answer: localAnswer, source: 'local' });
     }
 
@@ -91,12 +108,13 @@ Context about the club:
 ${clubContext}
 
 Instructions:
-- Answer questions about Leo Clubs in general and specifically about the Leo Club of Ananda College
-- Use the provided context when available
+- PRIORITIZE club-specific information when the question mentions "Ananda", "Leo Club of Ananda College", "this club", "your club", or "our club"
+- For questions specifically about Leo Club of Ananda College, use the provided context first
+- For general Leo Club questions (without specific club references), provide general Leo program information
 - Keep answers concise and helpful (2-3 sentences max for simple questions)
-- If asked about club-specific details not in the context, mention that you'd recommend checking the website or contacting the club
+- If asked about club-specific details not in the context, mention checking the website or contacting the club
 - Be friendly and encouraging about Leo Club activities and membership
-- For general Leo Club questions, provide accurate information about the Leo program
+- When someone asks "What is Leo Club of Ananda College" or similar, focus on the specific club, not general Leo information
 
 Question: ${question}
 
@@ -229,13 +247,38 @@ function answerFromKnowledge(question, k) {
   const has = (...terms) => terms.every(t => q.includes(t));
   const any = (...terms) => terms.some(t => q.includes(t));
 
-  // 1) Leo basics
-  if (has('what', 'leo') || q.includes('leo club')) {
+  // 0) Direct club question
+  if (q.includes('leo club of ananda college') || (q.includes('ananda') && (q.includes('about') || q.includes('tell me')))) {
     const parts = [];
-    if (lg.what_is_leo) parts.push(lg.what_is_leo);
-    if (club.name && club.motto) parts.push(`${club.name} — Motto: ${club.motto}.`);
-    return parts.join(' ')
-      || 'LEO stands for Leadership, Experience, Opportunity — youth service clubs under Lions Clubs International.';
+    if (club.name) parts.push(`${club.name} is a student-led service organization at Ananda College.`);
+    if (club.about) parts.push(club.about);
+    if (club.motto) parts.push(`Our motto: "${club.motto}".`);
+    return parts.join(' ') || 'Leo Club of Ananda College is a youth service organization focused on leadership development and community service.';
+  }
+
+  // 1) Leo basics - but prioritize club-specific questions
+  if (has('what', 'leo') || q.includes('leo club')) {
+    // If asking specifically about Leo Club of Ananda College
+    if (q.includes('ananda') || q.includes('this club') || q.includes('your club') || q.includes('our club')) {
+      const parts = [];
+      if (club.name) parts.push(`${club.name} is a student-led service organization.`);
+      if (club.about) parts.push(club.about);
+      if (club.motto) parts.push(`Our motto: "${club.motto}".`);
+      if (lg.what_is_leo) parts.push(`LEO stands for Leadership, Experience, Opportunity.`);
+      return parts.join(' ') || `${club.name || 'Our club'} is part of the Leo program - youth service clubs under Lions Clubs International.`;
+    }
+    // Generic Leo question
+    else if (!q.includes('ananda')) {
+      return lg.what_is_leo || 'LEO stands for Leadership, Experience, Opportunity — youth service clubs under Lions Clubs International.';
+    }
+    // Fallback for mixed questions
+    else {
+      const parts = [];
+      if (lg.what_is_leo) parts.push(lg.what_is_leo);
+      if (club.name && club.motto) parts.push(`${club.name} — Motto: ${club.motto}.`);
+      return parts.join(' ')
+        || 'LEO stands for Leadership, Experience, Opportunity — youth service clubs under Lions Clubs International.';
+    }
   }
 
   if (any('age', 'age range', 'ages')) {

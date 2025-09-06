@@ -404,3 +404,142 @@ hr.soft { border: 0; border-top: 1px solid var(--color-border); margin: 32px 0; 
 
 .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
 .suggestion { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: #f3f4f6; cursor: pointer; border: 1px solid var(--color-border); }
+
+/* Leo Hierarchy Section */
+.leo-hierarchy { padding: 0; }
+.hierarchy-section { 
+  padding: 80px 0; 
+  position: relative; 
+  min-height: 400px; 
+  display: flex; 
+  align-items: center; 
+}
+
+.hierarchy-content { 
+  display: grid; 
+  grid-template-columns: 1fr auto; 
+  gap: 60px; 
+  align-items: center; 
+  width: 100%; 
+}
+
+.hierarchy-content.district-reverse {
+  grid-template-columns: auto 1fr;
+}
+
+.hierarchy-text { 
+  flex: 1; 
+}
+
+.hierarchy-glass-box {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hierarchy-glass-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hierarchy-title {
+  font-size: 40px;
+  font-weight: 800;
+  margin: 0 0 20px 0;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+
+.md-title {
+  color: #eac24c; /* Darkish yellow */
+}
+
+.district-title {
+  color: #ea0880; /* Pink */
+}
+
+.hierarchy-description {
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hierarchy-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.district-logo {
+  width: 360px;
+  height: 360px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+/* Mobile responsiveness for hierarchy section */
+@media (max-width: 768px) {
+  .hierarchy-section {
+    padding: 60px 0;
+    min-height: 300px;
+  }
+  
+  .hierarchy-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .hierarchy-glass-box {
+    padding: 30px 20px;
+  }
+  
+  .hierarchy-title {
+    font-size: 28px;
+  }
+  
+  .hierarchy-description {
+    font-size: 15px;
+  }
+  
+  .district-logo {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hierarchy-section {
+    padding: 40px 0;
+  }
+  
+  .hierarchy-glass-box {
+    padding: 24px 16px;
+  }
+  
+  .hierarchy-title {
+    font-size: 24px;
+  }
+  
+  .hierarchy-description {
+    font-size: 14px;
+  }
+  
+  .district-logo {
+    width: 80px;
+    height: 80px;
+  }
+}
