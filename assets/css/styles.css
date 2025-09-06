@@ -266,6 +266,24 @@ main { flex: 1; display: block; }
   .news-meta .title { font-size: 14px; }
 }
 
+/* Board & Directors - ensure images show on mobile */
+.board-grid { display: grid; gap: 16px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+@media (max-width: 1100px) { .board-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 768px) { .board-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 480px) { .board-grid { grid-template-columns: 1fr; } }
+
+.board-card { border: 1px solid var(--color-border); border-radius: 12px; padding: 14px; text-align: center; box-shadow: var(--shadow-soft); background: #fff; }
+.board-avatar { display: block; width: 120px; height: 120px; border-radius: 999px; object-fit: cover; margin: 0 auto 10px; background: #f3f4f6; }
+@media (max-width: 480px) { .board-avatar { width: 140px; height: 140px; } }
+.board-meta .board-role { font-size: 13px; color: #6b7280; }
+.board-meta .board-name { font-weight: 600; color: #111827; }
+
+/* Past Presidents marquee - base layout */
+.people-marquee { overflow: hidden; border: 1px solid var(--color-border); border-radius: 12px; background: #fff; padding: 10px; }
+#past-marquee .people-track { display: flex; align-items: center; gap: 16px; will-change: transform; }
+.people-item { min-width: 160px; text-align: center; }
+.people-item .board-avatar { width: 120px; height: 120px; }
+
 /* Project slider */
 .proj-slider { position: relative; width: 100%; padding-top: 56.25%; background: #e5e7eb; border-radius: var(--radius-md); overflow: hidden; }
 .proj-slide { position: absolute; inset: 0; width:100%; height:100%; object-fit: cover; opacity: 0; transition: opacity .5s ease; }
@@ -357,7 +375,7 @@ main { flex: 1; display: block; }
   .people-item .meta .name, .people-item .board-name { font-size: 16px; }
   .people-item .meta .year, .people-item .board-role { font-size: 13px; }
 }
-@keyframes scrollPeople { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
+@keyframes pastScroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(var(--scroll-distance, -50%),0,0); } }
 
 /* Helpers */
 hr.soft { border: 0; border-top: 1px solid var(--color-border); margin: 32px 0; }

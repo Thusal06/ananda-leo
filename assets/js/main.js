@@ -265,9 +265,34 @@ async function renderPastPresidents() {
         <div class="meta"><span class="board-role">${m.year}</span><span class="board-name">${m.name}</span></div>
       </div>
     `).join('');
-    // duplicate for seamless loop; use requestAnimationFrame to avoid jank on heavy DOM
+    // duplicate for seamless loop
     track.innerHTML = html + html;
-    requestAnimationFrame(()=>{ track.style.transform = 'translateZ(0)'; });
+
+    // Measure total width to create a CSS-driven, smooth infinite scroll
+    let total = 0;
+    Array.from(track.children).forEach(ch => { total += ch.getBoundingClientRect().width; });
+    // Fallback if measurement fails
+    if (!total || !isFinite(total)) total = track.scrollWidth;
+
+    // Apply animation using CSS custom properties with constant speed
+    // Target speed ~90px/sec for smoother/slower motion
+    const distance = -(total / 2);
+    const speedPxPerSec = 90; // adjust to taste (lower = slower)
+    const durationSec = Math.max(10, Math.abs(distance) / speedPxPerSec);
+    track.style.setProperty('--scroll-distance', `${distance}px`);
+    track.style.animation = `pastScroll ${durationSec}s linear infinite`;
+
+    // Recompute on resize to keep speed consistent across layouts
+    const updateAnim = () => {
+      let w = 0;
+      Array.from(track.children).forEach(ch => { w += ch.getBoundingClientRect().width; });
+      if (!w || !isFinite(w)) w = track.scrollWidth;
+      const dist = -(w / 2);
+      const dur = Math.max(10, Math.abs(dist) / speedPxPerSec);
+      track.style.setProperty('--scroll-distance', `${dist}px`);
+      track.style.animation = `pastScroll ${dur}s linear infinite`;
+    };
+    window.addEventListener('resize', updateAnim, { passive: true });
   } catch (e) {
     marquee.outerHTML = '<p class="lead">Past presidents list coming soon.</p>';
   }
