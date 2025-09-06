@@ -5,6 +5,7 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+  included_files = ["data/**"]
 
 # Schedule: 1st and 15th at 01:30 UTC (twice a month)
 [functions."ig-projects-fetch"]

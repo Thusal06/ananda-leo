@@ -33,16 +33,19 @@ exports.handler = async (event) => {
     } catch (_) {}
 
     if (!data) {
-      // fallback to local file
+      // fallback to local file (works locally and with included_files on Netlify)
       const local = path.resolve(__dirname, '../../data', `${name}.json`);
       if (fs.existsSync(local)) {
         data = JSON.parse(fs.readFileSync(local, 'utf8'));
-      } else {
-        data = {};
       }
     }
 
-    return json(200, data || {});
+    if (!data) {
+      // Signal missing so client can fall back to static JSON via loadJSONFallback
+      return json(404, { error: 'Not found' });
+    }
+
+    return json(200, data);
   } catch (e) {
     console.error('data-read error', e);
     return json(200, {});
