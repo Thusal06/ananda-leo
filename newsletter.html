@@ -88,6 +88,11 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+  <script>
+    // Point the chatbot UI to Netlify function
+    window.CHAT_API_URL = '/.netlify/functions/leo-chat';
+  </script>
+  <script src="assets/js/chatbot.js"></script>
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

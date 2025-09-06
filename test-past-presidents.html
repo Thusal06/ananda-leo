@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Past Presidents</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <main>
+        <section class="section tint-gold">
+            <div class="container">
+                <div class="eyebrow">Board of Officials</div>
+                <h1 class="h2">Leadership for 2025/26</h1>
+                <p class="lead">Board to be announced.</p>
+                <div id="board-grid" class="board-grid" style="margin-top:22px;"></div>
+            </div>
+        </section>
+
+        <section class="section alt tint-gold" style="background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('assets/images/directorpanel.jpeg') center/cover no-repeat;">
+            <div class="container">
+                <div class="cta glass-dark on-dark" style="text-align:left;">
+                    <div class="eyebrow">Director Panel</div>
+                    <h2 class="h2">Director Panel 2025/26</h2>
+                    <p class="lead">Our dedicated directors supporting the club's operations.</p>
+                    <div id="directors-grid" class="board-grid" style="margin-top:22px;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section tint-gold">
+            <div class="container">
+                <div class="eyebrow">Past Presidents</div>
+                <h2 class="h2">Past Presidents</h2>
+                <p class="lead">Honouring our legacy of leadership.</p>
+                <div id="past-marquee" class="people-marquee" aria-label="Past presidents scrolling list">
+                    <div class="people-track"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Point the chatbot UI to Netlify function
+        window.CHAT_API_URL = '/.netlify/functions/leo-chat';
+    </script>
+    <script src="assets/js/chatbot.js"></script>
+</body>
+</html>

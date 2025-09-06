@@ -210,7 +210,7 @@ async function renderPastPresidents() {
     if (!people.length) return;
     const html = people.map(m => `
       <div class="people-item">
-        <img class="board-avatar" loading="lazy" decoding="async" width="240" height="240" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}" onerror="this.onerror=null;this.src='assets/images/avatar-placeholder.svg';">
+        <img class="board-avatar" loading="lazy" decoding="async" src="${m.avatar || 'assets/images/avatar-placeholder.svg'}" alt="${m.name}" onerror="this.onerror=null;this.src='assets/images/avatar-placeholder.svg';console.log('Image failed to load:', this.src);">
         <div class="meta"><span class="board-role">${m.year}</span><span class="board-name">${m.name}</span></div>
       </div>
     `).join('');

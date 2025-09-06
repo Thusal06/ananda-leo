@@ -147,10 +147,46 @@ main { flex: 1; display: block; }
 /* Sections */
 .section.alt { background: var(--color-surface); }
 .section.tint-gold { 
-  /* Softer, lower-contrast gold to reduce the internal notch effect */
-  background: linear-gradient(180deg, rgba(212,175,55,0.06), rgba(212,175,55,0.02)); 
-  border-top: 1px solid rgba(229,231,235,0.6); 
-  border-bottom: 1px solid rgba(229,231,235,0.6); 
+  /* Use a solid background color instead of gradient to eliminate rendering issues */
+  background: rgba(212,175,55,0.04); 
+  margin: 0 !important;
+  padding: 72px 0;
+  border: none !important;
+  outline: none !important;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Ensure seamless connection between adjacent tint-gold sections */
+.section.tint-gold + .section.tint-gold,
+.section.tint-gold + .section.alt.tint-gold,
+.section.alt.tint-gold + .section.tint-gold {
+  margin-top: 0 !important; /* no gaps, no overlaps */
+}
+
+/* Additional fix for sections with inline background styles */
+.section.alt.tint-gold {
+  margin: 0 !important;
+  padding: 72px 0;
+  border: none !important;
+  outline: none !important;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Board page specific fix - apply background to main container */
+.board-main {
+  background: rgba(212,175,55,0.04);
+}
+
+/* Remove background from individual sections on board page */
+.board-main .section.tint-gold {
+  background: transparent !important;
+}
+
+/* Keep the director panel background image */
+.board-main .section.alt.tint-gold {
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.25)), url('../images/directorpanel.jpeg') center/cover no-repeat !important;
 }
 .cta { text-align: center; padding: 64px 20px; border-radius: var(--radius-lg); background: rgba(255,255,255,0.28); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.35); }
 /* Dark glass variant for white text on images */
@@ -218,7 +254,7 @@ main { flex: 1; display: block; }
   -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
 }
-.people-track { display: flex; align-items: center; gap: 48px; padding: 24px 0; animation: scrollPeople 28s linear infinite; will-change: transform; }
+.people-track { display: flex; align-items: center; gap: 48px; padding: 24px 0; animation: scrollPeople 28s linear infinite; will-change: transform; flex-wrap: nowrap; }
 .people-item { 
   position: relative; display: flex; align-items: center; gap: 18px; 
   padding: 16px 18px; border-radius: 26px; 
@@ -227,6 +263,7 @@ main { flex: 1; display: block; }
   backdrop-filter: blur(14px) saturate(110%);
   box-shadow: 0 24px 48px rgba(0,0,0,0.14);
   overflow: hidden; /* ensure children respect rounded corners during slide */
+  min-width: fit-content; /* prevent container from shrinking too much */
 }
 .people-item::before {
   /* inner light sheen for liquid/glass feel */
@@ -235,17 +272,23 @@ main { flex: 1; display: block; }
   mix-blend-mode: soft-light; opacity: .6;
 }
 .people-item img, .people-item .board-avatar { 
-  width: 240px; height: 240px; border-radius: 22px; object-fit: cover; background: #eee; 
-  overflow: clip; /* keep rounded corners intact */
-  overflow-clip-margin: 12px; /* prevent corner artifacts during transforms */
+  width: 240px !important; height: 240px !important; /* force dimensions */
+  min-width: 240px; min-height: 240px; /* ensure minimum size */
+  max-width: 240px; max-height: 240px; /* prevent oversizing */
+  border-radius: 22px; object-fit: cover; background: #eee; 
+  display: block; /* ensure proper block display */
+  flex-shrink: 0; /* prevent flex shrinking */
+  overflow: hidden; /* fallback for older browsers */
+  object-position: center; /* center the image within the container */
+  aspect-ratio: 1 / 1; /* maintain square aspect ratio */
 }
 .people-item .meta { display: flex; flex-direction: column; line-height: 1.25; }
 .people-item .meta .name, .people-item .board-name { font-weight: 800; color: #111827; font-size: 20px; }
 .people-item .meta .year, .people-item .board-role { color: var(--color-maroon-ink); font-size: 16px; font-weight: 800; }
 .people-marquee:hover .people-track { animation-play-state: paused; }
-@media (max-width: 1200px) { .people-item img, .people-item .board-avatar { width: 200px; height: 200px; } }
-@media (max-width: 900px) { .people-item img, .people-item .board-avatar { width: 170px; height: 170px; } }
-@media (max-width: 600px) { .people-item img, .people-item .board-avatar { width: 130px; height: 130px; } }
+@media (max-width: 1200px) { .people-item img, .people-item .board-avatar { width: 200px !important; height: 200px !important; min-width: 200px; min-height: 200px; max-width: 200px; max-height: 200px; } }
+@media (max-width: 900px) { .people-item img, .people-item .board-avatar { width: 170px !important; height: 170px !important; min-width: 170px; min-height: 170px; max-width: 170px; max-height: 170px; } }
+@media (max-width: 600px) { .people-item img, .people-item .board-avatar { width: 130px !important; height: 130px !important; min-width: 130px; min-height: 130px; max-width: 130px; max-height: 130px; } }
 @keyframes scrollPeople { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-50%,0,0); } }
 
 /* Helpers */

@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
-// Simple, free FAQ-style responder using local JSON context only (no external APIs)
+// Enhanced chatbot with Gemini AI integration and local JSON context
 // Supports CORS and JSON POST requests from the site.
 
 const CORS_HEADERS = {
@@ -9,6 +10,10 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
+
+// Gemini API configuration
+const GEMINI_API_KEY = 'AIzaSyBiPdL02mNUIV_X_pKtkINmKqiGTapLikA';
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
 exports.handler = async (event) => {
   // CORS preflight
@@ -31,12 +36,26 @@ exports.handler = async (event) => {
       return respJSON(400, { error: 'Missing question' });
     }
 
-    // Load the first available JSON context file
+    // Load the local knowledge base
     const knowledge = loadKnowledge(contextFiles);
 
-    // Generate answer
-    const answer = answerFromKnowledge(questionRaw, knowledge);
-    return respJSON(200, { answer });
+    // Try local knowledge first for club-specific questions
+    const localAnswer = answerFromKnowledge(questionRaw, knowledge);
+    
+    // If local knowledge provides a specific answer, use it
+    if (localAnswer && !localAnswer.includes("I don't have that answer yet")) {
+      return respJSON(200, { answer: localAnswer, source: 'local' });
+    }
+
+    // Otherwise, use Gemini API for more comprehensive answers
+    try {
+      const geminiAnswer = await getGeminiAnswer(questionRaw, knowledge);
+      return respJSON(200, { answer: geminiAnswer, source: 'gemini' });
+    } catch (geminiError) {
+      console.error('Gemini API error:', geminiError);
+      // Fallback to local answer if Gemini fails
+      return respJSON(200, { answer: localAnswer || "I'm having trouble answering that right now. Please try again later.", source: 'fallback' });
+    }
   } catch (e) {
     console.error('Server error:', e);
     return respJSON(500, { error: 'Server error' });
@@ -49,6 +68,116 @@ function respJSON(statusCode, obj) {
     headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
     body: JSON.stringify(obj),
   };
+}
+
+// Function to get answer from Gemini API
+async function getGeminiAnswer(question, knowledge) {
+  const clubContext = JSON.stringify(knowledge, null, 2);
+  
+  const prompt = `You are a helpful assistant for the Leo Club of Ananda College. 
+
+Context about the club:
+${clubContext}
+
+Instructions:
+- Answer questions about Leo Clubs in general and specifically about the Leo Club of Ananda College
+- Use the provided context when available
+- Keep answers concise and helpful (2-3 sentences max for simple questions)
+- If asked about club-specific details not in the context, mention that you'd recommend checking the website or contacting the club
+- Be friendly and encouraging about Leo Club activities and membership
+- For general Leo Club questions, provide accurate information about the Leo program
+
+Question: ${question}
+
+Answer:`;
+
+  const requestBody = {
+    contents: [{
+      parts: [{
+        text: prompt
+      }]
+    }],
+    generationConfig: {
+      temperature: 0.7,
+      topK: 40,
+      topP: 0.95,
+      maxOutputTokens: 1024,
+    }
+  };
+
+  let response, data;
+  
+  // Try using fetch first (Node.js 18+)
+  if (typeof fetch !== 'undefined') {
+    response = await fetch(GEMINI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
+    }
+
+    data = await response.json();
+  } else {
+    // Fallback to https module
+    data = await makeHttpsRequest(GEMINI_API_URL, requestBody);
+  }
+  
+  if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+    return data.candidates[0].content.parts[0].text.trim();
+  }
+  
+  throw new Error('Invalid response format from Gemini API');
+}
+
+// Fallback function for environments without fetch
+function makeHttpsRequest(url, requestBody) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const postData = JSON.stringify(requestBody);
+    
+    const options = {
+      hostname: urlObj.hostname,
+      port: 443,
+      path: urlObj.pathname + urlObj.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      
+      res.on('end', () => {
+        try {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(JSON.parse(data));
+          } else {
+            reject(new Error(`Gemini API error: ${res.statusCode} ${res.statusMessage}`));
+          }
+        } catch (e) {
+          reject(new Error('Failed to parse Gemini API response'));
+        }
+      });
+    });
+
+    req.on('error', (e) => {
+      reject(new Error(`Request failed: ${e.message}`));
+    });
+
+    req.write(postData);
+    req.end();
+  });
 }
 
 function loadKnowledge(relPaths) {

@@ -56,23 +56,23 @@
   const panel = el('div', { class: 'chatbot-panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Leo Chat' });
   const header = el('div', { class: 'chatbot-header' });
   const title = el('h3', { html: 'Ask Leo' });
-  const mini = el('div', { class: 'mini', html: 'Leo knowledge + club info' });
+  const mini = el('div', { class: 'mini', html: 'Powered by Gemini AI + Club Knowledge' });
   const closeBtn = el('button', { class: 'button alt', style: 'padding:6px 10px;border-radius:8px;' }, [ document.createTextNode('Close') ]);
   header.appendChild(el('div', {}, [title, mini]));
   header.appendChild(closeBtn);
 
   const messages = el('div', { class: 'chatbot-messages' });
   const suggestions = el('div', { class: 'suggestions' });
-  ;['What is the Leo Club?', 'How to join?', 'Recent projects?', 'Board for 2025/26?'].forEach(q => {
+  ;['What is the Leo Club?', 'How to join?', 'Recent projects?', 'Board for 2025/26?', 'Leo Club benefits?', 'Community service ideas?'].forEach(q => {
     const s = el('div', { class: 'suggestion', html: q });
     s.addEventListener('click', () => sendMessage(q));
     suggestions.appendChild(s);
   });
-  messages.appendChild(el('div', { class: 'msg-row bot' }, [ el('div', { class: 'msg bot', html: 'Hi! I can answer general Leo questions and info about your club.' }) ]));
+  messages.appendChild(el('div', { class: 'msg-row bot' }, [ el('div', { class: 'msg bot', html: 'Hi! I can answer questions about Leo Clubs, our club activities, and general inquiries using AI assistance.' }) ]));
   messages.appendChild(suggestions);
 
   const inputBar = el('div', { class: 'chatbot-input' });
-  const input = el('input', { type: 'text', placeholder: 'Ask about Leo or this club…' });
+  const input = el('input', { type: 'text', placeholder: 'Ask me anything about Leo Clubs or our activities…' });
   const sendBtn = el('button', {}, [ document.createTextNode('Send') ]);
   inputBar.appendChild(input); inputBar.appendChild(sendBtn);
 
